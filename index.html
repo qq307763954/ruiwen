@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>瑞文智力测试</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .intro {
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        .question-container {
+            margin-bottom: 40px;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            text-align: center;
+            padding: 10px 20px;
+        }
+        .question-container.active {
+            opacity: 1;
+        }
+        .question-image {
+            max-width: 100%;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        .options-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        @media (max-width: 768px) {
+            .options-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .options-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        .option {
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            padding: 10px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        .option:hover {
+            border-color: #7eb6ff;
+            background-color: #f0f7ff;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .option.selected {
+            border-color: #2979ff;
+            background-color: #b6d3ff;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        .option img {
+            max-width: 100%;
+        }
+        .option-label {
+            font-size: 20px;
+            font-weight: bold;
+            margin-right: 15px;
+            width: 30px;
+            color: #333;
+            text-align: center;
+        }
+        .option-text {
+            font-size: 16px;
+            color: #666;
+            margin-left: 5px;
+        }
+        .option-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .option-content img {
+            max-width: 100%;
+        }
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .btn-next {
+            background-color: #4caf50;
+            color: white;
+        }
+        .btn-next:hover {
+            background-color: #3d9140;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn-prev {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        .btn-prev:hover {
+            background-color: #e0e0e0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .progress-container {
+            margin-bottom: 20px;
+        }
+        .progress-bar {
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .progress {
+            height: 100%;
+            background-color: #4caf50;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .progress-text {
+            text-align: right;
+            font-size: 14px;
+            color: #666;
+        }
+        #start-test {
+            display: block;
+            margin: 30px auto;
+            padding: 15px 30px;
+            background-color: #2979ff;
+            color: white;
+            font-size: 18px;
+        }
+        #results-container {
+            display: none;
+            text-align: center;
+        }
+        .result-info {
+            margin-bottom: 30px;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+        .score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2979ff;
+            margin: 20px 0;
+        }
+        .evaluation {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 20px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .name-input {
+            margin: 30px 0;
+            text-align: center;
+        }
+        .name-input input {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            width: 250px;
+            max-width: 100%;
+        }
+        /* 备用显示样式 */
+        .question-fallback {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .fallback-question {
+            margin: 20px 0;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .fallback-matrix {
+            display: grid;
+            grid-template-rows: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px auto;
+            max-width: 400px;
+        }
+        .matrix-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            justify-content: center;
+        }
+        .matrix-cell {
+            border: 1px solid #ddd;
+            padding: 20px;
+            text-align: center;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        .question-mark {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff5722;
+            background-color: #fff3e0;
+        }
+        .fallback-option {
+            padding: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #intro-container, #test-container, #results-container {
+            transition: opacity 0.3s ease-in-out;
+            opacity: 1;
+        }
+        
+        .fade-out {
+            opacity: 0 !important;
+        }
+        h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>瑞文标准智力测验</h1>
+        
+        <div id="intro-container">
+            <div class="intro">
+                <p>瑞文标准智力测验（Raven's Standard Progressive Matrices，简称SPM）是由英国心理学家瑞文（J.C. Raven）于1938年创制的一种非文字智力测验，用于测量一个人的观察力及清晰思维的能力。</p>
+                <p><strong>注意事项：</strong></p>
+                <ul>
+                    <li>测试时间大约需要30分钟</li>
+                    <li>请在安静、不受干扰的环境中进行测试</li>
+                    <li>请诚实作答，不要查询答案或寻求他人帮助</li>
+                    <li>测试结果仅供参考，不代表完整的智力评估</li>
+                </ul>
+            </div>
+            <div class="name-input">
+                <label for="user-name">请输入您的姓名：</label>
+                <input type="text" id="user-name" placeholder="请输入您的姓名" required>
+            </div>
+            <button id="start-test" class="btn">开始测试</button>
+        </div>
+        
+        <div id="test-container" style="display: none;">
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress" id="progress-bar"></div>
+                </div>
+                <div class="progress-text">
+                    <span id="current-question">1</span> / <span id="total-questions">60</span>
+                </div>
+            </div>
+            
+            <div id="question-container" class="question-container">
+                <!-- 问题内容将由JavaScript动态生成 -->
+            </div>
+            
+            <div class="navigation">
+                <button id="prev-btn" class="btn btn-prev" disabled>上一题</button>
+                <button id="next-btn" class="btn btn-next">下一题</button>
+            </div>
+        </div>
+        
+        <div id="results-container">
+            <h2>测试结果</h2>
+            <div class="result-info">
+                <p><span id="user-name-display"></span>，您共完成了 <span id="total-completed">0</span> 道题目，其中回答正确 <span id="correct-answers">0</span> 道题目。</p>
+                <div class="score">得分: <span id="score">0</span>/60</div>
+            </div>
+            
+            <div class="evaluation">
+                <p>您的智力水平评估: <span id="evaluation-level">-</span></p>
+            </div>
+            
+            <div class="detailed-results">
+                <h3>各部分得分明细</h3>
+                <table>
+                    <tr>
+                        <th>组别</th>
+                        <th>测试能力</th>
+                        <th>题目数</th>
+                        <th>正确数</th>
+                        <th>正确率</th>
+                    </tr>
+                    <tr>
+                        <td>A组</td>
+                        <td>知觉辨别能力</td>
+                        <td>12</td>
+                        <td id="setA-correct">0</td>
+                        <td id="setA-percent">0%</td>
+                    </tr>
+                    <tr>
+                        <td>B组</td>
+                        <td>类同比较能力</td>
+                        <td>12</td>
+                        <td id="setB-correct">0</td>
+                        <td id="setB-percent">0%</td>
+                    </tr>
+                    <tr>
+                        <td>C组</td>
+                        <td>比较推理能力</td>
+                        <td>12</td>
+                        <td id="setC-correct">0</td>
+                        <td id="setC-percent">0%</td>
+                    </tr>
+                    <tr>
+                        <td>D组</td>
+                        <td>系列关系能力</td>
+                        <td>12</td>
+                        <td id="setD-correct">0</td>
+                        <td id="setD-percent">0%</td>
+                    </tr>
+                    <tr>
+                        <td>E组</td>
+                        <td>抽象推理能力</td>
+                        <td>12</td>
+                        <td id="setE-correct">0</td>
+                        <td id="setE-percent">0%</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="evaluation-table">
+                <h3>智力水平评价标准</h3>
+                <table>
+                    <tr>
+                        <th>得分范围</th>
+                        <th>评级</th>
+                    </tr>
+                    <tr>
+                        <td>≥50分</td>
+                        <td>优秀</td>
+                    </tr>
+                    <tr>
+                        <td>40~49分</td>
+                        <td>良好</td>
+                    </tr>
+                    <tr>
+                        <td>30~39分</td>
+                        <td>中等</td>
+                    </tr>
+                    <tr>
+                        <td>20~29分</td>
+                        <td>中下</td>
+                    </tr>
+                    <tr>
+                        <td><20分</td>
+                        <td>低下</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <button id="restart-test" class="btn btn-next" style="margin-top: 30px;">重新测试</button>
+        </div>
+    </div>
+
+    <script src="js/raven-test.js"></script>
+</body>
+</html> 
