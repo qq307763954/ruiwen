@@ -254,13 +254,13 @@ function showQuestion(index) {
         
         questionContainer.appendChild(optionsContainer);
     } else {
-        // 创建问题容器和标题
-        const titleEl = document.createElement('div');
-        titleEl.style.fontSize = "14px";
-        titleEl.style.marginBottom = "5px";
-        titleEl.style.fontWeight = "bold";
-        titleEl.textContent = `${question.id} (${index+1}/60)`;
-        questionContainer.appendChild(titleEl);
+        // // 创建问题容器和标题
+        // const titleEl = document.createElement('div');
+        // titleEl.style.fontSize = "14px";
+        // titleEl.style.marginBottom = "5px";
+        // titleEl.style.fontWeight = "bold";
+        // titleEl.textContent = `${question.id} (${index+1}/60)`;
+        // questionContainer.appendChild(titleEl);
         
         // 创建问题图片
         const questionImg = document.createElement('img');
@@ -461,7 +461,10 @@ function showResults() {
         document.getElementById('correct-answers').textContent = results.totalCorrect;
         document.getElementById('score').textContent = results.totalCorrect;
         
+        // 隐藏智力评估相关部分
         document.getElementById('evaluation-level').textContent = evaluation;
+        document.querySelector('.evaluation').style.display = 'none';
+        document.querySelector('.evaluation-table').style.display = 'none';
         
         // 更新各组得分
         document.getElementById('setA-correct').textContent = results.setA;
