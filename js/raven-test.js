@@ -199,7 +199,7 @@ function showQuestion(index) {
         questionDiv.className = 'question-fallback';
         questionDiv.innerHTML = `
             <h3 style="text-align: center;">问题 ${question.id}</h3>
-            <p style="text-align: center;">请根据模式选择正确的答案选项</p>
+            <p style="text-align: center; font-size: 14px; margin: 5px 0;">请根据模式选择正确的答案选项</p>
             <div class="fallback-question">
                 <div class="fallback-matrix">
                     <div class="matrix-row">
@@ -218,7 +218,7 @@ function showQuestion(index) {
                         <div class="matrix-cell question-mark">?</div>
                     </div>
                 </div>
-                <p style="text-align: center; margin-top: 15px;">请选择合适的图形填入问号处</p>
+                <p style="text-align: center; margin-top: 10px; font-size: 14px;">请选择合适的图形填入问号处</p>
             </div>
         `;
         questionContainer.appendChild(questionDiv);
@@ -254,6 +254,14 @@ function showQuestion(index) {
         
         questionContainer.appendChild(optionsContainer);
     } else {
+        // 创建问题容器和标题
+        const titleEl = document.createElement('div');
+        titleEl.style.fontSize = "14px";
+        titleEl.style.marginBottom = "5px";
+        titleEl.style.fontWeight = "bold";
+        titleEl.textContent = `${question.id} (${index+1}/60)`;
+        questionContainer.appendChild(titleEl);
+        
         // 创建问题图片
         const questionImg = document.createElement('img');
         questionImg.src = `images/${question.id}.png`;
@@ -264,6 +272,7 @@ function showQuestion(index) {
         const optionsContainer = document.createElement('div');
         optionsContainer.className = 'options-container';
         const tab = ["A", "B", "C", "D", "E", "F"]
+        
         // 创建选项
         for (let i = 1; i <= question.options; i++) {
             const option = document.createElement('div');
@@ -275,7 +284,7 @@ function showQuestion(index) {
             // 添加字母标识
             const optionLabel = document.createElement('div');
             optionLabel.className = 'option-label';
-            optionLabel.textContent = `${tab[i-1]}.`;
+            optionLabel.textContent = `${tab[i-1]}`;
             
             const optionContent = document.createElement('div');
             optionContent.className = 'option-content';
